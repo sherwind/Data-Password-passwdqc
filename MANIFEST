@@ -34,6 +34,7 @@ src/passwdqc/README
 src/passwdqc/wordset_4k.c
 src/passwdqc/wordset_4k.h
 t/00-load.t
+t/assumptions.t
 t/default_policy.t
 t/permissive_policy.t
 t/pod.t

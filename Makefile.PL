@@ -16,6 +16,7 @@ WriteMakefile(
         'Any::Moose'           => 0,
         'List::MoreUtils'      => 0,
         'namespace::autoclean' => 0,
+        'Carp'                 => 0,
     },
     INC               => '-I. -I./src/passwdqc',
     MYEXTLIB          => 'src/libpasswdqc$(LIB_EXT)',

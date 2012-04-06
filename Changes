@@ -1,5 +1,9 @@
 Revision history for Perl extension Data::Password::passwdqc.
 
+0.03  Fri Apr  6 22:38:38 PHT 2012
+        - Reguire Carp
+        - Added tests for assumptions
+
 0.02  Fri Apr  6 01:41:11 PHT 2012
         - First released version
 
