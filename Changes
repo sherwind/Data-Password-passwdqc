@@ -1,5 +1,8 @@
 Revision history for Perl extension Data::Password::passwdqc.
 
+0.04  Mon Apr  9 11:11:52 PHT 2012
+        - Added coercion test
+
 0.03  Fri Apr  6 22:38:38 PHT 2012
         - Reguire Carp
         - Added tests for assumptions
