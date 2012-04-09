@@ -1,3 +1,5 @@
+use lib inc; use Devel::AssertOS qw(Unix Cygwin);
+
 use ExtUtils::MakeMaker 6.30;
 
 WriteMakefile(
