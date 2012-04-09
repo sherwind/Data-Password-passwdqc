@@ -10,7 +10,7 @@ use Any::Moose;
 use Any::Moose '::Util::TypeConstraints';
 use namespace::autoclean;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 require XSLoader;
 XSLoader::load('Data::Password::passwdqc', $VERSION);
