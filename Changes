@@ -1,5 +1,10 @@
 Revision history for Perl extension Data::Password::passwdqc.
 
+0.06  Sat Jun 13 00:52:18 SGT 2015
+        - Forget about Any::Moose and use Moose directly (reported by Karen Etheridge)
+        - Update to passwdqc v1.3.0
+        - Update to Devel::CheckOS v1.76
+
 0.05  Mon Apr  9 16:01:55 PHT 2012
         - require Unix or Cygwin platform
 
