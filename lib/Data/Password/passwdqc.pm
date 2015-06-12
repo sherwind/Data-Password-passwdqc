@@ -72,7 +72,7 @@ has 'similar_deny' => (
 
 has 'random_bits' => (
     is      => 'rw',
-    isa     => subtype( 'Int' => where { $_ == 0 || $_ >= 26 && $_ <= 81 } ),
+    isa     => subtype( 'Int' => where { $_ == 0 || $_ >= 24 && $_ <= 85 } ),
     default => 47,
     trigger => sub { $_[0]->_clear_params },
 );
