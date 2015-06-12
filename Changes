@@ -1,5 +1,8 @@
 Revision history for Perl extension Data::Password::passwdqc.
 
+0.07  Sat Jun 13 01:52:33 SGT 2015
+        - Reflect change to the random_bits range
+
 0.06  Sat Jun 13 00:52:18 SGT 2015
         - Forget about Any::Moose and use Moose directly (reported by Karen Etheridge)
         - Update to passwdqc v1.3.0
