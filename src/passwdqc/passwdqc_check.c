@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2002,2010 by Solar Designer.  See LICENSE.
+ * Copyright (c) 2000-2002,2010,2013 by Solar Designer.  See LICENSE.
  */
 
 #include <stdio.h>
@@ -66,14 +66,15 @@ static int expected_different(int charset, int length)
  * contain enough different characters for its class, or doesn't contain
  * enough words for a passphrase.
  *
- * The bias may be positive or negative.  It is added to the length,
- * except that a negative bias is not considered in the passphrase
- * length check because a passphrase is expected to contain words.
- * The bias does not apply to the number of different characters; the
- * actual number is used in all checks.
+ * The biases are added to the length, and they may be positive or negative.
+ * The passphrase length check uses passphrase_bias instead of bias so that
+ * zero may be passed for this parameter when the (other) bias is non-zero
+ * because of a dictionary word, which is perfectly normal for a passphrase.
+ * The biases do not affect the number of different characters, character
+ * classes, and word count.
  */
 static int is_simple(const passwdqc_params_qc_t *params, const char *newpass,
-    int bias)
+    int bias, int passphrase_bias)
 {
 	int length, classes, words, chars;
 	int digits, lowers, uppers, others, unknowns;
@@ -155,7 +156,7 @@ static int is_simple(const passwdqc_params_qc_t *params, const char *newpass,
 		if (!params->passphrase_words ||
 		    words < params->passphrase_words)
 			continue;
-		if (length + (bias > 0 ? bias : 0) >= params->min[2] &&
+		if (length + passphrase_bias >= params->min[2] &&
 		    chars >= expected_different(27, params->min[2]) - 1)
 			return 0;
 		continue;
@@ -291,7 +292,7 @@ static int is_based(const passwdqc_params_qc_t *params,
 				}
 				/* add credit for match_length - 1 chars */
 				bias = params->match_length - 1;
-				if (is_simple(params, scratch, bias)) {
+				if (is_simple(params, scratch, bias, bias)) {
 					clean(scratch);
 					return 1;
 				}
@@ -319,7 +320,8 @@ static int is_based(const passwdqc_params_qc_t *params,
 				bias += (int)params->match_length - j;
 				/* bias <= -1 */
 				if (bias < worst_bias) {
-					if (is_simple(params, original, bias))
+					if (is_simple(params, original, bias,
+					    (mode & 0xff) == 1 ? 0 : bias))
 						return 1;
 					worst_bias = bias;
 				}
@@ -342,23 +344,34 @@ next_match_length:
 
 /*
  * Common sequences of characters.
- * We don't need to list any of the characters in reverse order because the
+ * We don't need to list any of the entire strings in reverse order because the
  * code checks the new password in both "unified" and "unified and reversed"
- * form against these strings (unifying them first indeed).  We also don't
- * have to include common repeats of characters (e.g., "777", "!!!", "1000")
- * because these are often taken care of by the requirement on the number of
- * different characters.
+ * form against these strings (unifying them first indeed).  We also don't have
+ * to include common repeats of characters (e.g., "777", "!!!", "1000") because
+ * these are often taken care of by the requirement on the number of different
+ * characters.
  */
-const char *seq[] = {
+const char * const seq[] = {
 	"0123456789",
 	"`1234567890-=",
 	"~!@#$%^&*()_+",
 	"abcdefghijklmnopqrstuvwxyz",
+	"a1b2c3d4e5f6g7h8i9j0",
+	"1a2b3c4d5e6f7g8h9i0j",
+	"abc123",
 	"qwertyuiop[]\\asdfghjkl;'zxcvbnm,./",
 	"qwertyuiop{}|asdfghjkl:\"zxcvbnm<>?",
 	"qwertyuiopasdfghjklzxcvbnm",
 	"1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-['=]\\",
-	"qazwsxedcrfvtgbyhnujmikolp"
+	"!qaz@wsx#edc$rfv%tgb^yhn&ujm*ik<(ol>)p:?_{\"+}|",
+	"qazwsxedcrfvtgbyhnujmikolp",
+	"1q2w3e4r5t6y7u8i9o0p-[=]",
+	"q1w2e3r4t5y6u7i8o9p0[-]=\\",
+	"1qaz1qaz",
+	"1qaz!qaz", /* can't unify '1' and '!' - see comment in unify() */
+	"1qazzaq1",
+	"zaq!1qaz",
+	"zaq!2wsx"
 };
 
 /*
@@ -376,7 +389,7 @@ const char *seq[] = {
 static const char *is_word_based(const passwdqc_params_qc_t *params,
     const char *needle, const char *original, int is_reversed)
 {
-	char word[7];
+	char word[WORDSET_4K_LENGTH_MAX + 1];
 	char *unified;
 	unsigned int i;
 	int length;
@@ -384,6 +397,21 @@ static const char *is_word_based(const passwdqc_params_qc_t *params,
 
 	if (!params->match_length)	/* disabled */
 		return NULL;
+
+	mode = is_reversed | 1;
+	word[WORDSET_4K_LENGTH_MAX] = '\0';
+	for (i = 0; i < 0x1000; i++) {
+		memcpy(word, _passwdqc_wordset_4k[i], WORDSET_4K_LENGTH_MAX);
+		length = strlen(word);
+		if (length < params->match_length)
+			continue;
+		if (i < 0xfff &&
+		    !memcmp(word, _passwdqc_wordset_4k[i + 1], length))
+			continue;
+		unify(word, word);
+		if (is_based(params, word, needle, original, mode))
+			return REASON_WORD;
+	}
 
 	mode = is_reversed | 2;
 	for (i = 0; i < sizeof(seq) / sizeof(seq[0]); i++) {
@@ -397,22 +425,6 @@ static const char *is_word_based(const passwdqc_params_qc_t *params,
 		free(unified);
 	}
 
-	mode = is_reversed | 1;
-	word[6] = '\0';
-	for (i = 0; i < 0x1000; i++) {
-		memcpy(word, _passwdqc_wordset_4k[i], 6);
-		length = strlen(word);
-		if (length < params->match_length)
-			continue;
-		if (i < 0xfff &&
-		    !memcmp(word, _passwdqc_wordset_4k[i + 1], length))
-			continue;
-		unify(word, word);
-		if (is_based(params, word, needle, original, mode))
-			return REASON_WORD;
-	}
-
-	mode = is_reversed | 2;
 	if (params->match_length <= 4)
 	for (i = 1900; i <= 2039; i++) {
 		sprintf(word, "%u", i);
@@ -466,7 +478,7 @@ const char *passwdqc_check(const passwdqc_params_qc_t *params,
 		}
 	}
 
-	if (is_simple(params, newpass, 0)) {
+	if (is_simple(params, newpass, 0, 0)) {
 		reason = REASON_SIMPLE;
 		if (length < params->min[1] && params->min[1] <= params->max)
 			reason = REASON_SIMPLESHORT;

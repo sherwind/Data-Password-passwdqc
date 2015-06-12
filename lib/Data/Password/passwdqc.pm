@@ -237,7 +237,7 @@ a common substring spelled backwards.
 
 Defaults to 47.
 
-The size of randomly-generated passphrases in bits (26 to 81), or 0 to
+The size of randomly-generated passphrases in bits (24 to 85), or 0 to
 disable this feature.
 
 =back
