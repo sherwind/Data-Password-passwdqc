@@ -15,7 +15,7 @@ WriteMakefile(
         'ExtUtils::MakeMaker'  => '6.30'
     },
     PREREQ_PM         => {
-        'Any::Moose'           => 0,
+        'Moose'                => 0,
         'List::MoreUtils'      => 0,
         'namespace::autoclean' => 0,
         'Carp'                 => 0,

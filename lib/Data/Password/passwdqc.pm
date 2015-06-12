@@ -6,8 +6,8 @@ use warnings;
 use POSIX qw(INT_MAX);
 use List::MoreUtils qw(none);
 use Carp qw(croak);
-use Any::Moose;
-use Any::Moose '::Util::TypeConstraints';
+use Moose;
+use Moose::Util::TypeConstraints;
 use namespace::autoclean;
 
 our $VERSION = '0.05';
