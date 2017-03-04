@@ -41,6 +41,8 @@ pure_all :: static
 
 static :: libpasswdqc$(LIB_EXT)
 
+dynamic ::
+
 libpasswdqc$(LIB_EXT): $(O_FILES)
 	$(AR) cr libpasswdqc$(LIB_EXT) $(O_FILES)
 	$(RANLIB) libpasswdqc$(LIB_EXT)
