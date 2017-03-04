@@ -1,5 +1,10 @@
 Revision history for Perl extension Data::Password::passwdqc.
 
+0.08  Sat Mar  4 22:40:52 SGT 2017
+        - Fix build with recent EUMM and some make, thanks to Slaven Rezic RT#120447
+        - Update to passwdqc v1.3.1
+        - Add META.yml/json to CPAN distribution, thanks to Alexandr Ciornii RT#108330
+
 0.07  Sat Jun 13 01:52:33 SGT 2015
         - Reflect change to the random_bits range
 
