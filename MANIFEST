@@ -107,3 +107,5 @@ inc/Devel/AssertOS/DGUX.pm
 inc/Devel/AssertOS/AIX.pm
 inc/Devel/AssertOS/Android.pm
 inc/Devel/AssertOS/QNX.pm
+META.yml
+META.json
