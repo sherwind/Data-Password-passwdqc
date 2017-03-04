@@ -1,7 +1,7 @@
 use ExtUtils::MakeMaker;
 
 my $passwdqc_dir = 'passwdqc';
-my @objects = qw(concat passwdqc_check passwdqc_load passwdqc_parse passwdqc_random wordset_4k);
+my @objects = qw(concat passwdqc_check passwdqc_load passwdqc_memzero passwdqc_parse passwdqc_random wordset_4k);
 
 WriteMakefile(
     NAME   => 'passwdqc',
