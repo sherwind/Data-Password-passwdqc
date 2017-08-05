@@ -104,14 +104,8 @@ sub _build_params {
 
 sub validate_password {
     my $self = shift;
-    my ($new_pass, $old_pass) = @_;
 
-    my $reason;
-    if (@_ > 1) {
-        $reason = password_check($self->_params, $new_pass, $old_pass); 
-    } else {
-        $reason = password_check($self->_params, $new_pass); 
-    }
+    my $reason = password_check($self->_params, @_);
 
     if ($reason) {
         $self->reason($reason);
@@ -250,6 +244,8 @@ disable this feature.
 
   $is_valid = $pwdqc->validate_password('new password');
   $is_valid = $pwdqc->validate_password('new password', 'old password');
+  $is_valid = $pwdqc->validate_password('new password', 'old password', 'username');
+  $is_valid = $pwdqc->validate_password('new password', 'old password', 'username', 'real name');
   print $pwdqc->reason if not $is_valid;
 
 Checks passphrase quality. Returns a true value on success. If the check
