@@ -10,7 +10,7 @@ use Moose;
 use Moose::Util::TypeConstraints;
 use namespace::autoclean;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 require XSLoader;
 XSLoader::load('Data::Password::passwdqc', $VERSION);
@@ -265,6 +265,12 @@ be generated.
 Sherwin Daganato E<lt>sherwin@daganato.comE<gt>
 
 The copy of passwdqc bundled with this module was written by Solar Designer and Dmitry V. Levin.
+
+=head1 CONTRIBUTORS
+
+dhardison: Dylan William Hardison <dhardison@cpan.org>
+
+srezic: Slaven Rezic <srezic@cpan.org>
 
 =head1 LICENSE
 
